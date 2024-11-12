@@ -4,11 +4,17 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
+	err := os.MkdirAll("./db", os.ModePerm)
+	if err != nil {
+		log.Fatal("error during the creatin of directory:", err)
+	}
+
 	db, err := sql.Open("sqlite3", "./db/tasks.db")
 
 	if err != nil {
@@ -23,10 +29,10 @@ func main() {
 	
 	_, err = db.Exec(createTableSQL)
 	if err != nil {
-		log.Fatal("Erro ao criar tabela:", err)
+		log.Fatal("error during the creation of table:", err)
 	}
 	
-	fmt.Println("Banco de dados inicializado com sucesso!")
+	fmt.Println("SQLite3 database started 🔥")
 
 	defer db.Close()
 }
