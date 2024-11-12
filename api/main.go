@@ -16,7 +16,6 @@ func main() {
 	}
 
 	db, err := sql.Open("sqlite3", "./db/tasks.db")
-
 	if err != nil {
 		log.Fatal(err)
 	}
