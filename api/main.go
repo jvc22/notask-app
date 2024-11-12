@@ -20,9 +20,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	createTableSQL := `CREATE TABLE IF NOT EXISTS todos (
+	createTableSQL := `CREATE TABLE IF NOT EXISTS tasks (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 		"title" TEXT,
+		"ddescription" TEXT,
 		"completed" BOOLEAN
 	);`
 	
