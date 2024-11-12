@@ -23,7 +23,7 @@ func main() {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS tasks (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 		"title" TEXT,
-		"ddescription" TEXT,
+		"description" TEXT,
 		"completed" BOOLEAN
 	);`
 	
