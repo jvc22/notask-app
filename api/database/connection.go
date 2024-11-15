@@ -2,13 +2,11 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
-	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func createTasksTable(db *sql.DB) {
+func createTasksTable(db *sql.DB) error {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS tasks (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 		"title" TEXT,
@@ -18,19 +16,22 @@ func createTasksTable(db *sql.DB) {
 
 	_, err := db.Exec(createTableSQL)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }
 
-func StartDatabase() *sql.DB {
+func StartDatabase() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "./database/tasks.db")
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	createTasksTable(db)
+	err = createTasksTable(db)
+	if err != nil {
+		return nil, err
+	}
 
-	fmt.Println("SQLite3 database started 🔥")
-
-	return db
+	return db, nil
 }
