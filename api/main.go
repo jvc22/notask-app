@@ -1,9 +1,11 @@
 package main
 
 import (
-	"notask-app/db"
+	"notask-app/database"
 )
 
 func main() {
-	db.StartDatabase()
+	db := database.StartDatabase()
+
+	defer db.Close()
 }

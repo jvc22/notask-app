@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"database/sql"
@@ -8,12 +8,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func StartDatabase() {
-	db, err := sql.Open("sqlite3", "./db/tasks.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func createTasksTable(db *sql.DB) {
 	createTableSQL := `CREATE TABLE IF NOT EXISTS tasks (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 		"title" TEXT,
@@ -21,12 +16,21 @@ func StartDatabase() {
 		"completed" BOOLEAN
 	);`
 
-	_, err = db.Exec(createTableSQL)
+	_, err := db.Exec(createTableSQL)
 	if err != nil {
-		log.Fatal("error during the creation of table:", err)
+		log.Fatal(err)
 	}
+}
+
+func StartDatabase() *sql.DB {
+	db, err := sql.Open("sqlite3", "./database/tasks.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	createTasksTable(db)
 
 	fmt.Println("SQLite3 database started 🔥")
 
-	defer db.Close()
+	return db
 }
