@@ -8,7 +8,7 @@ import (
 func main() {
 	db, err := database.StartDatabase()
 	if err != nil {
-		log.Fatal("Error during opening database:", err)
+		log.Fatal("Error during database start:", err)
 	}
 
 	defer db.Close()
