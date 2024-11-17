@@ -49,7 +49,11 @@ export function NewTaskForm() {
           className="md:col-span-4 dark:border-transparent dark:bg-zinc-900 dark:shadow-shape"
         />
 
-        <Button type="submit" variant={'secondary'} disabled={isPending}>
+        <Button
+          type="submit"
+          className="dark:text-foreground dark:bg-zinc-800 dark:shadow-shape dark:hover:bg-zinc-800/90"
+          disabled={isPending}
+        >
           Create
         </Button>
       </form>
