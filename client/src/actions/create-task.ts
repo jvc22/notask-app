@@ -11,7 +11,10 @@ const createTaskSchema = z.object({
     .string()
     .min(1, { message: 'Title should not be empty.' })
     .max(16, { message: 'Title should have a maximum of 16 characters.' }),
-  description: z.string().max(40, {message: 'Description should have a maximum of 40 characters.'}).optional(),
+  description: z
+    .string()
+    .max(40, { message: 'Description should have a maximum of 40 characters.' })
+    .optional(),
 })
 
 export async function createTask(data: FormData) {

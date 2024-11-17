@@ -60,14 +60,13 @@ export function NewTaskForm() {
         </Button>
       </form>
 
-      {errors?.title && (
+      {errors?.title ? (
         <div>
           <span className="text-sm font-medium text-red-500">
             {errors.title[0]}
           </span>
         </div>
-      )}
-      {errors?.description && (
+      ) : errors?.description && (
         <div>
           <span className="text-sm font-medium text-red-500">
             {errors.description[0]}
