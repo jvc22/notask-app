@@ -6,37 +6,19 @@ import (
 	"notask-app/database"
 )
 
-type Task struct {
-	Id          int    `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Completed   bool   `json:"completed"`
-}
-
 func main() {
 	db, err := database.StartDatabase()
 	if err != nil {
 		panic(err)
 	}
-
 	defer db.Close()
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /tasks", func(w http.ResponseWriter, r *http.Request) {
-		tasks := []Task{
-			{
-				Id:          1,
-				Title:       "Homework",
-				Description: "Book & Website",
-				Completed:   false,
-			},
-			{
-				Id:          2,
-				Title:       "Dishes",
-				Description: "",
-				Completed:   true,
-			},
+		tasks, err := database.GetTasks(db)
+		if err != nil {
+			panic(err)
 		}
 
 		w.Header().Set("Content-Type", "application/json")

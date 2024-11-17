@@ -7,14 +7,13 @@ import (
 )
 
 func createTasksTable(db *sql.DB) error {
-	createTableSQL := `CREATE TABLE IF NOT EXISTS tasks (
+	createTasksTableSQL := `CREATE TABLE IF NOT EXISTS tasks (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 		"title" TEXT,
-		"description" TEXT,
-		"completed" BOOLEAN
+		"description" TEXT
 	);`
 
-	_, err := db.Exec(createTableSQL)
+	_, err := db.Exec(createTasksTableSQL)
 	if err != nil {
 		return err
 	}
