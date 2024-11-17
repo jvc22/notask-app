@@ -4,6 +4,10 @@ import { ThemeToggle } from './theme/theme-toggle'
 import { Button } from './ui/button'
 
 export function Header() {
+  function handleOpenGitHub() {
+    window.open('https://github.com/jvc22/notask-app', '_blank')
+  }
+  
   return (
     <header className="flex w-full items-center justify-between pt-6">
       <h1 className="text-lg font-bold">
