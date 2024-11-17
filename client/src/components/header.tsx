@@ -5,7 +5,7 @@ import { Button } from './ui/button'
 
 export function Header() {
   return (
-    <header className="flex w-full items-center justify-between py-4">
+    <header className="flex w-full items-center justify-between pt-6">
       <h1 className="text-lg font-bold">
         notask<span className="text-muted-foreground">.app</span>
       </h1>

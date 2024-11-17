@@ -1,17 +1,17 @@
 'use server'
 
 import { HTTPError } from 'ky'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
 import { api } from '@/lib/ky'
-import { revalidatePath } from 'next/cache'
 
 const createTaskSchema = z.object({
   title: z
     .string()
     .min(1, { message: 'Title should not be empty.' })
-    .max(64, { message: 'Title should have a maximum of 64 characters.' }),
-  description: z.string().optional(),
+    .max(16, { message: 'Title should have a maximum of 16 characters.' }),
+  description: z.string().max(40, {message: 'Description should have a maximum of 40 characters.'}).optional(),
 })
 
 export async function createTask(data: FormData) {
@@ -46,7 +46,7 @@ export async function createTask(data: FormData) {
     }
   }
 
-  revalidatePath("/get-tasks")
+  revalidatePath('/get-tasks')
 
   return { success: true, message: null, errors: null }
 }

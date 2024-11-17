@@ -1,5 +1,6 @@
 import { Header } from '@/components/header'
 import { NewTaskForm } from '@/components/new-task-form'
+import { TaskList } from '@/components/task/task-list'
 
 export default function Home() {
   return (
@@ -8,6 +9,8 @@ export default function Home() {
         <Header />
 
         <NewTaskForm />
+
+        <TaskList />
       </div>
     </div>
   )
