@@ -18,16 +18,36 @@ func main() {
 	mux.HandleFunc("GET /tasks", func(w http.ResponseWriter, r *http.Request) {
 		tasks, err := database.GetTasks(db)
 		if err != nil {
-			panic(err)
+			http.Error(w, "Error listing tasks", http.StatusInternalServerError)
+			
+			return
 		}
 
 		w.Header().Set("Content-Type", "application/json")
 
-		if err := json.NewEncoder(w).Encode(tasks); err != nil {
+		if err = json.NewEncoder(w).Encode(tasks); err != nil {
 			http.Error(w, "Unable to encode tasks", http.StatusInternalServerError)
 
 			return
 		}
+	})
+
+	mux.HandleFunc("POST /tasks", func(w http.ResponseWriter, r *http.Request) {
+		var newTask database.Task
+		if err := json.NewDecoder(r.Body).Decode(&newTask); err != nil {
+			http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+
+			return
+		}
+
+		err = database.CreateTask(db, newTask)
+		if err != nil {
+			http.Error(w, "Error creating task", http.StatusInternalServerError)
+
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
 	})
 
 	if err := http.ListenAndServe(":8080", mux); err != nil {
