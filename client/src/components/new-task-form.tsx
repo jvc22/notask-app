@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 
 import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
-export function NewTaaskForm() {
+export function NewTaskForm() {
   const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
     createTask,
     () => {

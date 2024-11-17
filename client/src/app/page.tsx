@@ -1,5 +1,5 @@
 import { Header } from '@/components/header'
-import { NewTaaskForm } from '@/components/new-task-form'
+import { NewTaskForm } from '@/components/new-task-form'
 
 export default function Home() {
   return (
@@ -7,7 +7,7 @@ export default function Home() {
       <div className="mx-auto w-full max-w-2xl space-y-6">
         <Header />
 
-        <NewTaaskForm />
+        <NewTaskForm />
       </div>
     </div>
   )
