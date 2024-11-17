@@ -9,9 +9,6 @@
 
 ## Business Rules
 
-- Task title must be unique, no two tasks can have the same title.
-- New tasks should have `completed` set to `false` by default.
 - `description` field is optional when creating a task.
 - Tasks can only be deleted by `id`, and should be permanently removed from the database.
-- Limit of 20 tasks at the same time with pagination support.
 - Title must be a non-empty string, with a maximum of 64 characters.
