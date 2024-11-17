@@ -73,6 +73,19 @@ func main() {
 			return
 		}
 
+		exists, err := database.TaskExists(db, taskIdAsInt)
+		if err != nil {
+			http.Error(w, "Error checking task existence", http.StatusInternalServerError)
+			
+			return
+		}
+	
+		if !exists {
+			http.Error(w, "Task not found", http.StatusNotFound)
+			
+			return
+		}
+
 		err = database.DeleteTask(db, taskIdAsInt)
 		if err != nil {
 			http.Error(w, "Error deleting task", http.StatusInternalServerError)
