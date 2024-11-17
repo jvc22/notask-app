@@ -12,7 +12,7 @@ type Task struct {
 }
 
 func GetTasks(db *sql.DB) ([]Task, error) {
-	getTasksQuery := "SELECT * from tasks"
+	getTasksQuery := "SELECT * from tasks ORDER BY id DESC"
 
 	rows, err := db.Query(getTasksQuery)
 	if err != nil {
