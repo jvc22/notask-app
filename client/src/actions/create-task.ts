@@ -4,6 +4,7 @@ import { HTTPError } from 'ky'
 import { z } from 'zod'
 
 import { api } from '@/lib/ky'
+import { revalidatePath } from 'next/cache'
 
 const createTaskSchema = z.object({
   title: z
@@ -44,6 +45,8 @@ export async function createTask(data: FormData) {
       errors: null,
     }
   }
+
+  revalidatePath("/get-tasks")
 
   return { success: true, message: null, errors: null }
 }
