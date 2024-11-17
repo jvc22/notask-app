@@ -22,7 +22,11 @@ func SetupRoutes(mux *http.ServeMux, db *sql.DB) {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		if err = json.NewEncoder(w).Encode(tasks); err != nil {
+		response := map[string]interface{}{
+			"tasks": tasks,
+		}
+
+		if err = json.NewEncoder(w).Encode(response); err != nil {
 			http.Error(w, "Unable to encode tasks", http.StatusInternalServerError)
 
 			return
