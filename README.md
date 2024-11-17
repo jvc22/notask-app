@@ -11,4 +11,5 @@
 
 - `description` field is optional when creating a task.
 - Tasks can only be deleted by `id`, and should be permanently removed from the database.
-- Title must be a non-empty string, with a maximum of 64 characters.
+- Title must be a non-empty string, with a maximum of 16 characters.
+- Description should have a maximum of 40 characters.
