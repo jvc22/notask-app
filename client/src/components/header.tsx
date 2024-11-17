@@ -1,3 +1,5 @@
+"use client"
+
 import { GitHubLogoIcon } from '@radix-ui/react-icons'
 
 import { ThemeToggle } from './theme/theme-toggle'
@@ -16,7 +18,7 @@ export function Header() {
 
       <div className="text-foreground ml-auto flex items-center gap-2 text-sm">
         <div>
-          <Button size="sm" variant="ghost">
+          <Button size="sm" variant="ghost" onClick={handleOpenGitHub}>
             <GitHubLogoIcon />
           </Button>
 
