@@ -31,3 +31,25 @@ func GetTasks(db *sql.DB) ([]Task, error) {
 
 	return tasks, nil
 }
+
+func CreateTask(db *sql.DB, task Task) error {
+	insertTaskQuery := "INSERT INTO tasks (title, description) VALUES (?, ?)"
+
+	_, err := db.Exec(insertTaskQuery, task.Title, task.Description)
+	if err != nil {
+		return fmt.Errorf("error creating task: %v", err)
+	}
+
+	return nil
+}
+
+func DeleteTask(db *sql.DB, taskId int) error {
+	deleteTaskQuery := "DELETE FROM tasks WHERE id=?"
+
+	_, err := db.Exec(deleteTaskQuery, taskId)
+	if err != nil {
+		return fmt.Errorf("error creating task: %v", err)
+	}
+
+	return nil
+}
