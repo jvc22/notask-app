@@ -43,8 +43,20 @@ func CreateTask(db *sql.DB, task Task) error {
 	return nil
 }
 
+func TaskExists(db *sql.DB, taskId int) (bool, error) {
+	var exists bool
+	query := "SELECT EXISTS(SELECT 1 FROM tasks WHERE id = ?)"
+
+	err := db.QueryRow(query, taskId).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
 func DeleteTask(db *sql.DB, taskId int) error {
-	deleteTaskQuery := "DELETE FROM tasks WHERE id=?"
+	deleteTaskQuery := "DELETE FROM tasks WHERE id = ?"
 
 	_, err := db.Exec(deleteTaskQuery, taskId)
 	if err != nil {
