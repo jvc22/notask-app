@@ -39,7 +39,7 @@ export function NewTaskForm() {
           autoComplete="off"
           placeholder="Task title"
           className={cn(
-            'md:col-span-2 dark:bg-zinc-900 dark:shadow-shape',
+            'dark:bg-zinc-900 dark:shadow-shape md:col-span-2',
             errors?.title ? 'border-red-500' : 'dark:border-transparent',
           )}
         />
@@ -48,12 +48,12 @@ export function NewTaskForm() {
           name="description"
           autoComplete="off"
           placeholder="Task description (optional)"
-          className="md:col-span-4 dark:border-transparent dark:bg-zinc-900 dark:shadow-shape"
+          className="dark:border-transparent dark:bg-zinc-900 dark:shadow-shape md:col-span-4"
         />
 
         <Button
           type="submit"
-          className="dark:text-foreground dark:bg-zinc-800 dark:shadow-shape dark:hover:bg-zinc-800/90"
+          className="dark:bg-zinc-800 dark:text-foreground dark:shadow-shape dark:hover:bg-zinc-800/90"
           disabled={isPending}
         >
           Create
@@ -66,12 +66,14 @@ export function NewTaskForm() {
             {errors.title[0]}
           </span>
         </div>
-      ) : errors?.description && (
-        <div>
-          <span className="text-sm font-medium text-red-500">
-            {errors.description[0]}
-          </span>
-        </div>
+      ) : (
+        errors?.description && (
+          <div>
+            <span className="text-sm font-medium text-red-500">
+              {errors.description[0]}
+            </span>
+          </div>
+        )
       )}
     </div>
   )

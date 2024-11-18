@@ -13,7 +13,7 @@ export async function TaskList() {
           tasks.map((task) => <TaskItem key={task.id} data={task} />)
         ) : (
           <TableRow>
-            <TableCell className="text-muted-foreground text-center text-base">
+            <TableCell className="text-center text-base text-muted-foreground">
               No tasks found
             </TableCell>
           </TableRow>
