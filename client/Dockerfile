@@ -10,7 +10,7 @@ COPY ./package*.json ./
 
 RUN npm ci --force
 
-FROM node:20.18.0-alpine3.19 AS builder
+FROM base AS builder
 
 WORKDIR /app
 
@@ -20,15 +20,15 @@ COPY ./ ./
 
 RUN npm run build
 
-FROM node:20.18.0-alpine3.19 AS runner
+RUN npm prune --production --force
+
+FROM base AS runner
 
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 nodejs
 
 RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /app/public ./public
 
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 
