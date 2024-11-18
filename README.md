@@ -18,8 +18,6 @@
 ## Installation
 
 1. **Clone the repository from GitHub**:
-   - Open your terminal or command prompt.
-   - Run the following command to clone the repository:<br>
 
    ```bash
    git clone https://github.com/jvc22/notask-app.git
@@ -27,8 +25,6 @@
    ```
 
 2. **Run docker compose**:
-    - Ensure that Docker and Docker Compose are installed on your system.
-    - Run the following command to start the application in detached mode:<br>
 
     ```bash
    docker-compose up -d
