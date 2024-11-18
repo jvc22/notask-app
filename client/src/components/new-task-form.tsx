@@ -1,60 +1,97 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { AlertTriangle } from 'lucide-react'
+import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { z } from 'zod'
 
-import { createTask } from '@/actions/create-task'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useFormState } from '@/hooks/use-form-state'
+import { createTask } from '@/http/create-task'
+import { getQueryClient } from '@/lib/react-query'
 import { cn } from '@/lib/utils'
 
 import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
+const createTaskSchema = z.object({
+  title: z
+    .string()
+    .min(1, { message: 'Title should not be empty.' })
+    .max(16, { message: 'Title should have a maximum of 16 characters.' }),
+  description: z
+    .string()
+    .max(40, { message: 'Description should have a maximum of 40 characters.' })
+    .optional(),
+})
+
+type CreateTaskData = z.infer<typeof createTaskSchema>
+
 export function NewTaskForm() {
-  const [{ success, message, errors }, handleSubmit, isPending] = useFormState(
-    createTask,
-    () => {
+  const queryClient = getQueryClient()
+
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<CreateTaskData>({
+    resolver: zodResolver(createTaskSchema),
+  })
+
+  const { mutateAsync: createTaskFn, isError } = useMutation({
+    mutationFn: createTask,
+    onSuccess: async () => {
+      reset()
+
+      queryClient.invalidateQueries({
+        queryKey: ['tasks'],
+      })
+
       toast.success('Task created successfully!')
     },
-    true,
-  )
+  })
 
   return (
     <div className="space-y-3">
-      {!success && message && (
+      {isError && (
         <Alert className="border-red-500 text-red-500">
           <AlertTriangle className="size-4 stroke-red-500" />
+
           <AlertTitle>Registration failed.</AlertTitle>
-          <AlertDescription>{message}</AlertDescription>
+
+          <AlertDescription>
+            Unexpected error. Try again in a few minutes.
+          </AlertDescription>
         </Alert>
       )}
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit((data) => createTaskFn(data))}
         className="mx-md:grid-rows-3 grid gap-3 md:grid-cols-7"
       >
         <Input
-          name="title"
+          {...register('title')}
           autoComplete="off"
           placeholder="Task title"
           className={cn(
-            'md:col-span-2 dark:bg-zinc-900 dark:shadow-shape',
+            'dark:bg-zinc-900 dark:shadow-shape md:col-span-2',
             errors?.title ? 'border-red-500' : 'dark:border-transparent',
           )}
         />
 
         <Input
-          name="description"
+          {...register('description')}
           autoComplete="off"
           placeholder="Task description (optional)"
-          className="md:col-span-4 dark:border-transparent dark:bg-zinc-900 dark:shadow-shape"
+          className="dark:border-transparent dark:bg-zinc-900 dark:shadow-shape md:col-span-4"
         />
 
         <Button
           type="submit"
-          className="dark:text-foreground dark:bg-zinc-800 dark:shadow-shape dark:hover:bg-zinc-800/90"
-          disabled={isPending}
+          className="dark:bg-zinc-800 dark:text-foreground dark:shadow-shape dark:hover:bg-zinc-800/90"
+          disabled={isSubmitting}
         >
           Create
         </Button>
@@ -63,15 +100,17 @@ export function NewTaskForm() {
       {errors?.title ? (
         <div>
           <span className="text-sm font-medium text-red-500">
-            {errors.title[0]}
+            {errors.title.message}
           </span>
         </div>
-      ) : errors?.description && (
-        <div>
-          <span className="text-sm font-medium text-red-500">
-            {errors.description[0]}
-          </span>
-        </div>
+      ) : (
+        errors?.description && (
+          <div>
+            <span className="text-sm font-medium text-red-500">
+              {errors.description.message}
+            </span>
+          </div>
+        )
       )}
     </div>
   )

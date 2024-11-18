@@ -1,5 +1,3 @@
-'use server'
-
 import { api } from '@/lib/ky'
 
 export interface GetTasksResponse {
@@ -13,5 +11,5 @@ export interface GetTasksResponse {
 export async function getTasks() {
   const result = await api.get('tasks').json<GetTasksResponse>()
 
-  return result.tasks
+  return result
 }

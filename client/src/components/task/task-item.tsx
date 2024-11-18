@@ -1,9 +1,10 @@
-'use client'
-
-import { Check, Trash } from 'lucide-react'
+import { useMutation } from '@tanstack/react-query'
+import { X } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { removeTask } from '@/actions/remove-task'
+import { GetTasksResponse } from '@/http/get-tasks'
+import { removeTask } from '@/http/remove-task'
+import { getQueryClient } from '@/lib/react-query'
 
 import { Button } from '../ui/button'
 import { TableCell, TableRow } from '../ui/table'
@@ -17,13 +18,33 @@ interface TaskItemProps {
 }
 
 export function TaskItem({ data: { id, title, description } }: TaskItemProps) {
-  async function onRemoveTask(text: string) {
-    const result = await removeTask({ taskId: id })
+  const queryClient = getQueryClient()
 
-    if (result) {
-      toast.success(`Task ${text} successfully!`)
-    }
+  function removeTaskOnCache() {
+    const tasksCache = queryClient.getQueriesData<GetTasksResponse>({
+      queryKey: ['tasks'],
+    })
+
+    tasksCache.forEach(([cacheKey, cached]) => {
+      if (!cached) {
+        return
+      }
+
+      queryClient.setQueryData<GetTasksResponse>(cacheKey, {
+        ...cached,
+        tasks: cached.tasks.filter((task) => task.id !== id),
+      })
+    })
   }
+
+  const { mutateAsync: removeTaskFn } = useMutation({
+    mutationFn: removeTask,
+    onSuccess: async () => {
+      removeTaskOnCache()
+
+      toast.success('Note closed successfully!')
+    },
+  })
 
   return (
     <TableRow className="text-base">
@@ -36,19 +57,9 @@ export function TaskItem({ data: { id, title, description } }: TaskItemProps) {
           <Button
             size={'sm'}
             variant={'ghost'}
-            className="hover:text-green-500"
-            onClick={() => onRemoveTask('finished')}
+            onClick={() => removeTaskFn({ taskId: id })}
           >
-            <Check className="size-3" />
-          </Button>
-
-          <Button
-            size={'sm'}
-            variant={'ghost'}
-            className="hover:text-red-500"
-            onClick={() => onRemoveTask('deleted')}
-          >
-            <Trash className="size-3" />
+            <X className="size-3" />
           </Button>
         </div>
       </TableCell>

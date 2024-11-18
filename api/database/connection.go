@@ -22,7 +22,7 @@ func createTasksTable(db *sql.DB) error {
 }
 
 func StartDatabase() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "./database/tasks.db")
+	db, err := sql.Open("sqlite3", "./database/volume/tasks.db")
 	if err != nil {
 		return nil, err
 	}

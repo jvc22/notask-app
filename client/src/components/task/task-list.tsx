@@ -1,20 +1,27 @@
-import { getTasks } from '@/actions/get-tasks'
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
+
+import { getTasks } from '@/http/get-tasks'
 
 import { Table, TableBody, TableCell, TableRow } from '../ui/table'
 import { TaskItem } from './task-item'
 
-export async function TaskList() {
-  const tasks = await getTasks()
+export function TaskList() {
+  const { data } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: getTasks,
+  })
 
   return (
     <Table>
       <TableBody>
-        {tasks ? (
-          tasks.map((task) => <TaskItem key={task.id} data={task} />)
+        {data && data.tasks ? (
+          data.tasks.map((task) => <TaskItem key={task.id} data={task} />)
         ) : (
           <TableRow>
-            <TableCell className="text-muted-foreground text-center text-base">
-              No tasks found
+            <TableCell className="text-center text-base text-muted-foreground">
+              No task found
             </TableCell>
           </TableRow>
         )}
