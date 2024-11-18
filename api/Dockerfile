@@ -24,4 +24,6 @@ COPY --from=builder /app/notask-app ./notask-app
 
 RUN touch /app/database/volume/tasks.db
 
+EXPOSE 8080
+
 CMD ["./notask-app"]
