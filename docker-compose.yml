@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - notask-data:/app/database/volume
+      - sqlite:/app/database/volume
 
   client:
     build:
@@ -18,4 +18,4 @@ services:
       - api
 
 volumes:
-  notask-data:
+  sqlite:
