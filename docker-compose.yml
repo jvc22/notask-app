@@ -6,9 +6,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - notask-data:/app/database/volume
-    networks:
-      - notask-net  
+      - sqlite:/app/database/volume
 
   client:
     build:
@@ -18,12 +16,6 @@ services:
       - "3000:3000"
     depends_on:
       - api
-    networks:
-      - notask-net  
 
 volumes:
-  notask-data:
-
-networks:
-  notask-net:  
-    driver: bridge
+  sqlite:

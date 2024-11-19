@@ -12,7 +12,7 @@ COPY ./ ./
 
 ENV CGO_ENABLED=1
 
-RUN go build -o notask-app .
+RUN go build -o api .
 
 FROM alpine:latest
 
@@ -20,10 +20,10 @@ WORKDIR /app
 
 RUN mkdir -p /app/database/volume
 
-COPY --from=builder /app/notask-app ./notask-app
+COPY --from=builder /app/api ./api
 
 RUN touch /app/database/volume/tasks.db
 
 EXPOSE 8080
 
-CMD ["./notask-app"]
+CMD ["./api"]
