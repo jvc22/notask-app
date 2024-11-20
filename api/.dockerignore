@@ -3,3 +3,5 @@
 Dockerfile
 
 tasks.db
+/tests
+mock.go
