@@ -1,26 +1,12 @@
 package main
 
 import (
-	"net/http"
 	"notask-app/database"
 	"notask-app/routes"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
-
-func corsMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusOK)
-
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
 
 func main() {
 	db, err := database.StartDatabase()
@@ -29,13 +15,16 @@ func main() {
 	}
 	defer db.Close()
 
-	mux := http.NewServeMux()
+	app := fiber.New()
 
-	routes.SetupRoutes(mux, db)
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:3000",
+		AllowMethods: "GET, POST, DELETE",
+	}))
 
-	handlerWithCORS := corsMiddleware(mux)
+	routes.SetupRoutes(app, db)
 
-	if err := http.ListenAndServe(":8080", handlerWithCORS); err != nil {
+	if err := app.Listen(":8080"); err != nil {
 		panic(err)
 	}
 }
