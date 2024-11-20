@@ -2,94 +2,104 @@ package routes
 
 import (
 	"database/sql"
-	"encoding/json"
 	"log"
-	"net/http"
 	"notask-app/database"
 	"strconv"
+
+	"github.com/gofiber/fiber/v2"
 )
 
-func SetupRoutes(mux *http.ServeMux, db *sql.DB) {
-	mux.HandleFunc("GET /tasks", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("GET /tasks")
+func SetupRoutes(app *fiber.App, db *sql.DB) {
+	app.Route("/", func(api fiber.Router) {
+		api.Get("/tasks", func(c *fiber.Ctx) error {
+			log.Println("GET /tasks")
 
-		tasks, err := database.GetTasks(db)
-		if err != nil {
-			http.Error(w, "Error listing tasks", http.StatusInternalServerError)
+			tasks, err := database.GetTasks(db)
+			if err != nil {
+				log.Printf("> Error retrieving tasks: %v", err)
 
-			return
-		}
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": "Error listing tasks.",
+				})
+			}
 
-		w.Header().Set("Content-Type", "application/json")
+			c.Set("Content-Type", "application/json")
 
-		response := map[string]interface{}{
-			"tasks": tasks,
-		}
+			return c.JSON(fiber.Map{"tasks": tasks})
+		})
 
-		if err = json.NewEncoder(w).Encode(response); err != nil {
-			http.Error(w, "Unable to encode tasks", http.StatusInternalServerError)
+		app.Post("/tasks", func(c *fiber.Ctx) error {
+			log.Println("POST /tasks")
 
-			return
-		}
-	})
+			var newTask database.Task
+			if err := c.BodyParser(&newTask); err != nil {
+				if newTask.Title == "" {
+					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+						"message": "Title is required.",
+					})
+				}
 
-	mux.HandleFunc("POST /tasks", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("POST /tasks")
+				log.Printf("> Error parsing body: %v", err)
 
-		var newTask database.Task
-		if err := json.NewDecoder(r.Body).Decode(&newTask); err != nil {
-			http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": "Error parsing body.",
+				})
+			}
 
-			return
-		}
+			err := database.CreateTask(db, newTask)
+			if err != nil {
+				log.Printf("> Error creating task: %v", err)
 
-		err := database.CreateTask(db, newTask)
-		if err != nil {
-			http.Error(w, "Error creating task", http.StatusInternalServerError)
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": "Error creating task.",
+				})
+			}
 
-			return
-		}
+			return c.SendStatus(fiber.StatusCreated)
+		})
 
-		w.WriteHeader(http.StatusCreated)
-	})
+		api.Delete("/tasks/:id", func(c *fiber.Ctx) error {
+			log.Println("DELETE /tasks")
 
-	mux.HandleFunc("DELETE /tasks/{id}", func(w http.ResponseWriter, r *http.Request) {
-		log.Println("DELETE /tasks")
+			taskId := c.Params("id")
+			if taskId == "" {
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+					"message": "Task Id is required.",
+				})
+			}
 
-		taskId := r.PathValue("id")
-		if taskId == "" {
-			http.Error(w, "Task ID is required", http.StatusBadRequest)
+			taskIdAsInt, err := strconv.Atoi(taskId)
+			if err != nil {
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+					"message": "Task Id should be a valid number.",
+				})
+			}
 
-			return
-		}
+			taskExists, err := database.TaskExists(db, taskIdAsInt)
+			if err != nil {
+				log.Printf("> Error checking task existence: %v", err)
 
-		taskIdAsInt, err := strconv.Atoi(taskId)
-		if err != nil {
-			http.Error(w, "Invalid Task ID", http.StatusBadRequest)
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": "Error checking task existence.",
+				})
+			}
 
-			return
-		}
+			if !taskExists {
+				return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+					"message": "Task not found.",
+				})
+			}
 
-		exists, err := database.TaskExists(db, taskIdAsInt)
-		if err != nil {
-			http.Error(w, "Error checking task existence", http.StatusInternalServerError)
+			err = database.DeleteTask(db, taskIdAsInt)
+			if err != nil {
+				log.Printf("> Error deleting task: %v", err)
 
-			return
-		}
-
-		if !exists {
-			http.Error(w, "Task not found", http.StatusNotFound)
-
-			return
-		}
-
-		err = database.DeleteTask(db, taskIdAsInt)
-		if err != nil {
-			http.Error(w, "Error deleting task", http.StatusInternalServerError)
-
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": "Error deleting task.",
+				})
+			}
+			
+			return c.SendStatus(fiber.StatusOK)
+		})
 	})
 }
