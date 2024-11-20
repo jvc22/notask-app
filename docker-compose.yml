@@ -1,21 +1,13 @@
 services:
-  api:
+  app:
     build:
-      context: ./api
+      context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    volumes:
-      - sqlite:/app/database/volume
-
-  client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    ports:
       - "3000:3000"
-    depends_on:
-      - api
+    volumes:
+      - sqlite:/app/server/database/volume
 
 volumes:
   sqlite:
