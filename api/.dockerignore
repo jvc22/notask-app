@@ -1,7 +1,0 @@
-.git
-.gitignore
-Dockerfile
-
-tasks.db
-/tests
-/database/mock.go
