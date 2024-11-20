@@ -19,7 +19,7 @@ const createTaskSchema = z.object({
   title: z
     .string()
     .min(1, { message: 'Title should not be empty.' })
-    .max(16, { message: 'Title should have a maximum of 16 characters.' }),
+    .max(20, { message: 'Title should have a maximum of 20 characters.' }),
   description: z
     .string()
     .max(40, { message: 'Description should have a maximum of 40 characters.' })

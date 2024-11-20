@@ -48,11 +48,13 @@ export function TaskItem({ data: { id, title, description } }: TaskItemProps) {
 
   return (
     <TableRow className="text-base">
-      <TableCell className="w-1/5">{title}</TableCell>
+      <TableCell className="w-[200px] truncate">
+        <span title={title}>{title}</span>
+      </TableCell>
 
       <TableCell className="text-muted-foreground">{description}</TableCell>
 
-      <TableCell className="w-1/5">
+      <TableCell className="w-[64px]">
         <div className="flex justify-end">
           <Button
             size={'sm'}
