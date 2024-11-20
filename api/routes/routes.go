@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"database/sql"
 	"log"
 	"notask-app/database"
 	"strconv"
@@ -9,12 +8,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func SetupRoutes(app *fiber.App, db *sql.DB) {
+func SetupRoutes(app *fiber.App, db database.Database) {
 	app.Route("/", func(api fiber.Router) {
 		api.Get("/tasks", func(c *fiber.Ctx) error {
 			log.Println("GET /tasks")
 
-			tasks, err := database.GetTasks(db)
+			tasks, err := db.GetTasks()
 			if err != nil {
 				log.Printf("> Error retrieving tasks: %v", err)
 
@@ -25,6 +24,10 @@ func SetupRoutes(app *fiber.App, db *sql.DB) {
 
 			c.Set("Content-Type", "application/json")
 
+			if len(tasks) == 0 {
+				return c.JSON(fiber.Map{"tasks": []database.Task{}})
+			}
+		
 			return c.JSON(fiber.Map{"tasks": tasks})
 		})
 
@@ -33,12 +36,6 @@ func SetupRoutes(app *fiber.App, db *sql.DB) {
 
 			var newTask database.Task
 			if err := c.BodyParser(&newTask); err != nil {
-				if newTask.Title == "" {
-					return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-						"message": "Title is required.",
-					})
-				}
-
 				log.Printf("> Error parsing body: %v", err)
 
 				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -46,7 +43,13 @@ func SetupRoutes(app *fiber.App, db *sql.DB) {
 				})
 			}
 
-			err := database.CreateTask(db, newTask)
+			if newTask.Title == "" {
+				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+					"message": "Title is required.",
+				})
+			}
+
+			err := db.CreateTask(newTask)
 			if err != nil {
 				log.Printf("> Error creating task: %v", err)
 
@@ -75,7 +78,7 @@ func SetupRoutes(app *fiber.App, db *sql.DB) {
 				})
 			}
 
-			taskExists, err := database.TaskExists(db, taskIdAsInt)
+			taskExists, err := db.TaskExists(taskIdAsInt)
 			if err != nil {
 				log.Printf("> Error checking task existence: %v", err)
 
@@ -90,7 +93,7 @@ func SetupRoutes(app *fiber.App, db *sql.DB) {
 				})
 			}
 
-			err = database.DeleteTask(db, taskIdAsInt)
+			err = db.DeleteTask(taskIdAsInt)
 			if err != nil {
 				log.Printf("> Error deleting task: %v", err)
 
@@ -98,7 +101,7 @@ func SetupRoutes(app *fiber.App, db *sql.DB) {
 					"message": "Error deleting task.",
 				})
 			}
-			
+
 			return c.SendStatus(fiber.StatusOK)
 		})
 	})
