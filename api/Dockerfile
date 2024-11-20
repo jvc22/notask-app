@@ -6,6 +6,9 @@ WORKDIR /app
 
 COPY go.mod go.sum ./
 
+RUN CGO_ENABLED=0 go mod tidy -e && \
+    CGO_ENABLED=0 go mod download
+
 RUN go mod download
 
 COPY ./ ./

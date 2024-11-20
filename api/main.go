@@ -9,11 +9,11 @@ import (
 )
 
 func main() {
-	db, err := database.StartDatabase()
+	connection, err := database.StartDatabase()
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
+	defer connection.Close()
 
 	app := fiber.New()
 
@@ -21,6 +21,8 @@ func main() {
 		AllowOrigins: "http://localhost:3000",
 		AllowMethods: "GET, POST, DELETE",
 	}))
+
+	db := database.NewSQLDatabase(connection)
 
 	routes.SetupRoutes(app, db)
 

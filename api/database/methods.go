@@ -5,13 +5,11 @@ import (
 	"fmt"
 )
 
-type Task struct {
-	Id          int    `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
+type SQLDatabase struct {
+	*sql.DB
 }
 
-func GetTasks(db *sql.DB) ([]Task, error) {
+func (db *SQLDatabase) GetTasks() ([]Task, error) {
 	getTasksQuery := "SELECT * from tasks ORDER BY id DESC"
 
 	rows, err := db.Query(getTasksQuery)
@@ -32,7 +30,7 @@ func GetTasks(db *sql.DB) ([]Task, error) {
 	return tasks, nil
 }
 
-func CreateTask(db *sql.DB, task Task) error {
+func (db *SQLDatabase) CreateTask(task Task) error {
 	insertTaskQuery := "INSERT INTO tasks (title, description) VALUES (?, ?)"
 
 	_, err := db.Exec(insertTaskQuery, task.Title, task.Description)
@@ -43,8 +41,9 @@ func CreateTask(db *sql.DB, task Task) error {
 	return nil
 }
 
-func TaskExists(db *sql.DB, taskId int) (bool, error) {
+func (db *SQLDatabase) TaskExists(taskId int) (bool, error) {
 	var exists bool
+
 	query := "SELECT EXISTS(SELECT 1 FROM tasks WHERE id = ?)"
 
 	err := db.QueryRow(query, taskId).Scan(&exists)
@@ -55,7 +54,7 @@ func TaskExists(db *sql.DB, taskId int) (bool, error) {
 	return exists, nil
 }
 
-func DeleteTask(db *sql.DB, taskId int) error {
+func (db *SQLDatabase) DeleteTask(taskId int) error {
 	deleteTaskQuery := "DELETE FROM tasks WHERE id = ?"
 
 	_, err := db.Exec(deleteTaskQuery, taskId)

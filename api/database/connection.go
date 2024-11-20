@@ -6,14 +6,20 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func createTasksTable(db *sql.DB) error {
+var connection *sql.DB
+
+func NewSQLDatabase(connection *sql.DB) *SQLDatabase {
+	return &SQLDatabase{connection}
+}
+
+func createTasksTable() error {
 	createTasksTableSQL := `CREATE TABLE IF NOT EXISTS tasks (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 		"title" TEXT,
 		"description" TEXT
 	);`
 
-	_, err := db.Exec(createTasksTableSQL)
+	_, err := connection.Exec(createTasksTableSQL)
 	if err != nil {
 		return err
 	}
@@ -22,15 +28,17 @@ func createTasksTable(db *sql.DB) error {
 }
 
 func StartDatabase() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "./database/volume/tasks.db")
+	var err error
+
+	connection, err = sql.Open("sqlite3", "./database/volume/tasks.db")
 	if err != nil {
 		return nil, err
 	}
 
-	err = createTasksTable(db)
+	err = createTasksTable()
 	if err != nil {
 		return nil, err
 	}
 
-	return db, nil
+	return connection, nil
 }

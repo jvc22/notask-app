@@ -14,9 +14,9 @@ export function TaskList() {
   })
 
   return (
-    <Table>
+    <Table className="table-fixed">
       <TableBody>
-        {data && data.tasks ? (
+        {data && data.tasks.length ? (
           data.tasks.map((task) => <TaskItem key={task.id} data={task} />)
         ) : (
           <TableRow>
