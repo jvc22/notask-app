@@ -4,4 +4,4 @@ Dockerfile
 
 tasks.db
 /tests
-mock.go
+/database/mock.go
