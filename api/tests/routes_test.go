@@ -211,6 +211,62 @@ func TestSignIn(t *testing.T) {
 	})
 }
 
+func TestGetUserProfile(t * testing.T) {
+	t.Run("User not found", func(t *testing.T) {
+		user := database.User{}
+
+		db.On("GetUserProfile", mock.MatchedBy(func(userId string) bool {
+			assert.Equal(t, testUserId, userId)
+
+			return true
+		})).Return(user, database.ErrUserNotFound).Once()
+
+		req := httptest.NewRequest("GET", "/user/profile", nil)
+
+		resp, err := app.Test(req)
+		if err != nil {
+			t.Fatal("Error sending request:", err)
+		}
+
+		assert.Equal(t, fiber.StatusUnauthorized, resp.StatusCode)
+
+		expectedResponse := `{"message":"User not found."}`
+		bodyBytes, _ := io.ReadAll(resp.Body)
+
+		assert.Equal(t, expectedResponse, string(bodyBytes))
+
+		db.AssertExpectations(t)
+	})
+
+	t.Run("Fetch user data successfully", func(t *testing.T) {
+		user := database.User{
+			Username: testUsername,
+		}
+
+		db.On("GetUserProfile", mock.MatchedBy(func(userId string) bool {
+			assert.Equal(t, testUserId, userId)
+
+			return true
+		})).Return(user, nil).Once()
+
+		req := httptest.NewRequest("GET", "/user/profile", nil)
+
+		resp, err := app.Test(req)
+		if err != nil {
+			t.Fatal("Error sending request:", err)
+		}
+
+		assert.Equal(t, fiber.StatusOK, resp.StatusCode)
+
+		expectedResponse := `{"username":"` + testUsername + `"}`
+		bodyBytes, _ := io.ReadAll(resp.Body)
+
+		assert.Equal(t, expectedResponse, string(bodyBytes))
+
+		db.AssertExpectations(t)
+	})
+}
+
 func TestGetTasks(t *testing.T) {
 	t.Run("No tasks in database", func(t *testing.T) {
 		tasks := []database.Task{}
