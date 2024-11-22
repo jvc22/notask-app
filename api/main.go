@@ -11,7 +11,9 @@ import (
 
 func main() {
 	if err := godotenv.Load("/app/.env"); err != nil {
-		panic(err)
+		if err := godotenv.Load("../.env"); err != nil {
+			panic(err)
+		}
 	}
 
 	connection, err := database.StartDatabase()
