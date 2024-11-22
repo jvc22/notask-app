@@ -197,8 +197,8 @@ func SetupRoutes(app *fiber.App, db database.Database) {
 				log.Printf("> Authentication error: %v", err)
 
 				if err == database.ErrInvalidCredentials {
-					return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-						"message": "Invalid key.",
+					return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+						"message": "Invalid password.",
 					})
 				}
 
