@@ -128,7 +128,7 @@ func SetupRoutes(app *fiber.App, db database.Database) {
 
 			if signUpData.Username == "" || signUpData.Password == "" {
 				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-					"message": "Username and key are required.",
+					"message": "Username and password are required.",
 				})
 			}
 
