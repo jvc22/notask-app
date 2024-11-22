@@ -1,29 +1,31 @@
 package main
 
 import (
+	"notask-app/auth"
 	"notask-app/database"
 	"notask-app/routes"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load("../.env"); err != nil {
+		panic(err)
+	}
+
 	connection, err := database.StartDatabase()
 	if err != nil {
 		panic(err)
 	}
 	defer connection.Close()
 
-	app := fiber.New()
-
-	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000",
-		AllowMethods: "GET, POST, DELETE",
-	}))
-
 	db := database.NewSQLDatabase(connection)
 
+	app := fiber.New()
+
+	auth.SetCORS(app)
+	auth.AuthMiddleware(app, connection)
 	routes.SetupRoutes(app, db)
 
 	if err := app.Listen(":8080"); err != nil {

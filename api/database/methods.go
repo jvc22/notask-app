@@ -3,16 +3,71 @@ package database
 import (
 	"database/sql"
 	"fmt"
+
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type SQLDatabase struct {
 	*sql.DB
 }
 
-func (db *SQLDatabase) GetTasks() ([]Task, error) {
-	getTasksQuery := "SELECT * from tasks ORDER BY id DESC"
+var ErrInvalidCredentials = fmt.Errorf("invalid credentials")
 
-	rows, err := db.Query(getTasksQuery)
+func (db *SQLDatabase) UserExists(username string) (bool, error) {
+	var exists bool
+
+	userExistsQuery := "SELECT EXISTS(SELECT 1 FROM users WHERE username = ?)"
+
+	err := db.QueryRow(userExistsQuery, username).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}
+
+func (db *SQLDatabase) SignUp(data Auth) error {
+	newUserId := uuid.New()
+
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("error encrypting key: %v", err)
+	}
+
+	createAccountQuery := "INSERT INTO users (id, username, password) VALUES (?, ?, ?)"
+
+	_, err = db.Exec(createAccountQuery, newUserId, data.Username, hashPassword)
+	if err != nil {
+		return fmt.Errorf("error creating password: %v", err)
+	}
+
+	return nil
+}
+
+func (db *SQLDatabase) SignIn(data Auth) (string, error) {
+	getUserDataQuery := "SELECT id, password FROM users WHERE username = ?"
+
+	var userId, hashPassword string
+
+	err := db.QueryRow(getUserDataQuery, data.Username).Scan(&userId, &hashPassword)
+	if err != nil {
+		return "", fmt.Errorf("error retrieving user data: %v", err)
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(data.Password))
+	if err != nil {
+		return "", ErrInvalidCredentials
+	}
+
+	return userId, nil
+}
+
+
+func (db *SQLDatabase) GetTasks(userId string) ([]Task, error) {
+	getTasksQuery := "SELECT id, title, description FROM tasks WHERE userId = ? ORDER BY id DESC"
+
+	rows, err := db.Query(getTasksQuery, userId)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching tasks: %v", err)
 	}
@@ -30,10 +85,10 @@ func (db *SQLDatabase) GetTasks() ([]Task, error) {
 	return tasks, nil
 }
 
-func (db *SQLDatabase) CreateTask(task Task) error {
-	insertTaskQuery := "INSERT INTO tasks (title, description) VALUES (?, ?)"
+func (db *SQLDatabase) CreateTask(userId string, task Task) error {
+	insertTaskQuery := "INSERT INTO tasks (title, description, userId) VALUES (?, ?, ?)"
 
-	_, err := db.Exec(insertTaskQuery, task.Title, task.Description)
+	_, err := db.Exec(insertTaskQuery, task.Title, task.Description, userId)
 	if err != nil {
 		return fmt.Errorf("error creating task: %v", err)
 	}
@@ -41,12 +96,12 @@ func (db *SQLDatabase) CreateTask(task Task) error {
 	return nil
 }
 
-func (db *SQLDatabase) TaskExists(taskId int) (bool, error) {
+func (db *SQLDatabase) TaskExists(userId string, taskId int) (bool, error) {
 	var exists bool
 
-	query := "SELECT EXISTS(SELECT 1 FROM tasks WHERE id = ?)"
+	taskExistsQuery := "SELECT EXISTS(SELECT 1 FROM tasks WHERE id = ? AND userId = ?)"
 
-	err := db.QueryRow(query, taskId).Scan(&exists)
+	err := db.QueryRow(taskExistsQuery, taskId, userId).Scan(&exists)
 	if err != nil {
 		return false, err
 	}
@@ -54,10 +109,10 @@ func (db *SQLDatabase) TaskExists(taskId int) (bool, error) {
 	return exists, nil
 }
 
-func (db *SQLDatabase) DeleteTask(taskId int) error {
-	deleteTaskQuery := "DELETE FROM tasks WHERE id = ?"
+func (db *SQLDatabase) DeleteTask(userId string, taskId int) error {
+	deleteTaskQuery := "DELETE FROM tasks WHERE id = ? AND userId = ?"
 
-	_, err := db.Exec(deleteTaskQuery, taskId)
+	_, err := db.Exec(deleteTaskQuery, taskId, userId)
 	if err != nil {
 		return fmt.Errorf("error creating task: %v", err)
 	}
