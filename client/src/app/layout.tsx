@@ -17,11 +17,11 @@ const geistMono = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'notask | App',
+  title: 'App | notask',
   description: 'Minimal To-Do List app',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-geist antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} px-6 font-geist antialiased`}
       >
         <Providers>{children}</Providers>
       </body>
