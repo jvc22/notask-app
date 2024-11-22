@@ -9,7 +9,11 @@ import (
 )
 
 func AuthMiddleware(app *fiber.App, db *sql.DB) {
-	app.Use("/tasks", func(c *fiber.Ctx) error {
+	app.Use("/", func(c *fiber.Ctx) error {
+		if strings.HasPrefix(c.Path(), "/auth") {
+			return c.Next()
+		}
+
 		authHeader := c.Get("Authorization")
         
         if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {

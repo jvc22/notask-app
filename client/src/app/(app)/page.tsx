@@ -1,6 +1,7 @@
 import { Header } from '@/components/header'
-import { NewTaskForm } from '@/components/new-task-form'
 import { TaskList } from '@/components/task/task-list'
+
+import { NewTaskForm } from './new-task-form'
 
 export default function Home() {
   return (

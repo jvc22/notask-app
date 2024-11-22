@@ -5,6 +5,10 @@ type Auth struct {
 	Password string `json:"password"`
 }
 
+type User struct {
+	Username string `json:"username"`
+}
+
 type Task struct {
 	Id          int    `json:"id"`
 	Title       string `json:"title"`
@@ -15,6 +19,7 @@ type Database interface {
 	UserExists(username string) (bool, error)
 	SignUp(data Auth) error
 	SignIn(data Auth) (string, error)
+	GetUserProfile(userId string) (User, error)
 	GetTasks(userId string) ([]Task, error)
 	TaskExists(userId string, id int) (bool, error)
 	CreateTask(userId string, task Task) error

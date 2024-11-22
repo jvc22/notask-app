@@ -1,15 +1,8 @@
-'use client'
-
-import { GitHubLogoIcon } from '@radix-ui/react-icons'
-
-import { ThemeToggle } from './theme/theme-toggle'
-import { Button } from './ui/button'
+import { AccountMenu } from '../account-menu'
+import { ThemeToggle } from '../theme/theme-toggle'
+import { GitHubButton } from './github-button'
 
 export function Header() {
-  function handleOpenGitHub() {
-    window.open('https://github.com/jvc22/notask-app', '_blank')
-  }
-
   return (
     <header className="flex w-full items-center justify-between pt-6">
       <h1 className="text-lg font-bold">
@@ -18,12 +11,11 @@ export function Header() {
 
       <div className="ml-auto flex items-center gap-2 text-sm text-foreground">
         <div>
-          <Button size="sm" variant="ghost" onClick={handleOpenGitHub}>
-            <GitHubLogoIcon />
-          </Button>
+          <GitHubButton />
 
           <ThemeToggle />
         </div>
+        <AccountMenu />
       </div>
     </header>
   )

@@ -57,6 +57,8 @@ RUN mkdir -p /app/api
 
 COPY --from=compiler /app/api ./api/api
 
+COPY .env .
+
 RUN mkdir -p /app/database/volume && \
     chmod 777 /app/database/volume && \
     touch /app/database/volume/tasks.db && \

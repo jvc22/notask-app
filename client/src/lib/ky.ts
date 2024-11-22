@@ -1,8 +1,13 @@
 import { CookiesFn, deleteCookie, getCookie } from 'cookies-next'
 import ky from 'ky'
+import { redirect } from 'next/navigation'
+import { toast } from 'sonner'
 
 export const api = ky.create({
   prefixUrl: 'http://localhost:8080',
+  retry: {
+    limit: 0,
+  },
   hooks: {
     beforeRequest: [
       async (request) => {
@@ -33,6 +38,10 @@ export const api = ky.create({
 
         if (response.status === 401) {
           deleteCookie('notask-token', { cookies: cookieStore })
+
+          toast.warning('Your session expired.')
+
+          redirect('/auth/sign-in')
         }
       },
     ],

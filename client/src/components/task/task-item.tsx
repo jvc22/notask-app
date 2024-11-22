@@ -42,7 +42,7 @@ export function TaskItem({ data: { id, title, description } }: TaskItemProps) {
     onSuccess: async () => {
       removeTaskOnCache()
 
-      toast.success('Note closed successfully!')
+      toast.success('Task closed successfully!')
     },
   })
 

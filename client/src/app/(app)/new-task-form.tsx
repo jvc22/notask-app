@@ -7,13 +7,12 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { createTask } from '@/http/create-task'
 import { getQueryClient } from '@/lib/react-query'
 import { cn } from '@/lib/utils'
-
-import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
 const createTaskSchema = z.object({
   title: z

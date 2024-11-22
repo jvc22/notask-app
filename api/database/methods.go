@@ -13,6 +13,7 @@ type SQLDatabase struct {
 }
 
 var ErrInvalidCredentials = fmt.Errorf("invalid credentials")
+var ErrUserNotFound = fmt.Errorf("user not found")
 
 func (db *SQLDatabase) UserExists(username string) (bool, error) {
 	var exists bool
@@ -63,6 +64,22 @@ func (db *SQLDatabase) SignIn(data Auth) (string, error) {
 	return userId, nil
 }
 
+func (db *SQLDatabase) GetUserProfile(userId string) (User, error) {
+	getUserProfileQuery := "SELECT username FROM users WHERE id = ?"
+
+	var user User
+
+	err := db.QueryRow(getUserProfileQuery, userId).Scan(&user.Username)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return User{}, ErrUserNotFound
+		}
+
+		return User{}, fmt.Errorf("error fetching user profile: %v", err)
+	}
+
+	return user, nil
+}
 
 func (db *SQLDatabase) GetTasks(userId string) ([]Task, error) {
 	getTasksQuery := "SELECT id, title, description FROM tasks WHERE userId = ? ORDER BY id DESC"
