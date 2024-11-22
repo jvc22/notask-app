@@ -216,8 +216,37 @@ func SetupRoutes(app *fiber.App, db database.Database) {
 				})
 			}
 
+			c.Locals("userId", userId)
+
 			return c.Status(fiber.StatusOK).JSON(fiber.Map{
 				"token": token,
+			})
+		})
+	})
+
+	app.Route("/user", func(api fiber.Router) {
+		api.Get("/profile", func(c *fiber.Ctx) error {
+			log.Println("GET /user/profile")
+
+			userId := c.Locals("userId").(string)
+
+			user, err := db.GetUserProfile(userId)
+			if err != nil {
+				log.Printf("> Authentication error: %v", err)
+
+				if err == database.ErrUserNotFound {
+					return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+						"message": "User not found.",
+					})
+				}
+
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"message": "Error. Try again in a few minutes.",
+				})
+			}
+
+			return c.Status(fiber.StatusOK).JSON(fiber.Map{
+				"username": user.Username,
 			})
 		})
 	})
