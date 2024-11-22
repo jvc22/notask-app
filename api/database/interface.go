@@ -21,7 +21,7 @@ type Database interface {
 	SignIn(data Auth) (string, error)
 	GetUserProfile(userId string) (User, error)
 	GetTasks(userId string) ([]Task, error)
-	TaskExists(userId string, id int) (bool, error)
 	CreateTask(userId string, task Task) error
+	TaskExists(userId string, id int) (bool, error)
 	DeleteTask(userId string, id int) error
 }
