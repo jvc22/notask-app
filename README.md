@@ -1,17 +1,20 @@
 ## Functional requirements
 
 - Initialize SQLite database and create `tasks.db`.
-- Allow creation of tasks with `title`, `completed`, and `description`.
-- Retrieve tasks with `id`, `title`, `completed`, and `description`.
+- Local users can create accounts.
+- Communication between Client and API must have token validation.
+- Allow creation of tasks with `title`, `description`, and `userId`.
+- Retrieve tasks with `id`, `title`, and `description`.
 - Update task completion status by `id`.
 - Tasks can only be deleted by `id`, and should be permanently removed from the database.
-- Delete task by `id`.
 - Handle errors with informative messages.
 
 ## Business Rules
 
+- Auth methods should be implemented.
+- Tasks must be linked with their own user.
 - `description` field is optional when creating a task.
-- Active tasks should be persisted until closed.
+- Active tasks must be persisted until closed.
 - Title must be a non-empty string, with a maximum of 16 characters.
 - Description should have a maximum of 40 characters.
 

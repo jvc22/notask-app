@@ -58,9 +58,7 @@ export function NewTaskForm() {
       {isError && (
         <Alert className="border-red-500 text-red-500">
           <AlertTriangle className="size-4 stroke-red-500" />
-
-          <AlertTitle>Registration failed.</AlertTitle>
-
+          <AlertTitle>Submission failed.</AlertTitle>
           <AlertDescription>
             Unexpected error. Try again in a few minutes.
           </AlertDescription>
@@ -90,8 +88,8 @@ export function NewTaskForm() {
 
         <Button
           type="submit"
-          className="dark:bg-zinc-800 dark:text-foreground dark:shadow-shape dark:hover:bg-zinc-800/90"
           disabled={isSubmitting}
+          className="dark:bg-zinc-800 dark:text-foreground dark:shadow-shape dark:hover:bg-zinc-800/90"
         >
           Create
         </Button>
