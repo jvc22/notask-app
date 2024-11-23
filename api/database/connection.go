@@ -44,10 +44,10 @@ func createTasksTable() error {
 	return nil
 }
 
-func StartDatabase() (*sql.DB, error) {
+func StartDatabase(path string) (*sql.DB, error) {
 	var err error
 
-	connection, err = sql.Open("sqlite3", "./database/volume/tasks.db")
+	connection, err = sql.Open("sqlite3", path)
 	if err != nil {
 		return nil, err
 	}

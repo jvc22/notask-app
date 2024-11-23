@@ -61,8 +61,8 @@ COPY .env .
 
 RUN mkdir -p /app/database/volume && \
     chmod 777 /app/database/volume && \
-    touch /app/database/volume/tasks.db && \
-    chmod 666 /app/database/volume/tasks.db
+    touch /app/database/volume/database.db && \
+    chmod 666 /app/database/volume/database.db
 
 USER nextjs
 

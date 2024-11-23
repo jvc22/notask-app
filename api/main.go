@@ -16,7 +16,7 @@ func main() {
 		}
 	}
 
-	connection, err := database.StartDatabase()
+	connection, err := database.StartDatabase("./database/volume/tasks.db")
 	if err != nil {
 		panic(err)
 	}
