@@ -1,4 +1,4 @@
-package tests
+package routes
 
 import (
 	"bytes"
@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"notask-app/auth"
 	"notask-app/database"
-	"notask-app/routes"
+	"notask-app/tests"
 	"testing"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,7 +18,7 @@ import (
 )
 
 var app *fiber.App
-var db *MockDatabase
+var db *tests.MockDatabase
 
 var testUserId = "testuserid"
 var testUsername = "testusername"
@@ -31,7 +31,7 @@ func TestMain(m *testing.M) {
 
 	app = fiber.New()
 
-	db = &MockDatabase{}
+	db = &tests.MockDatabase{}
 
 	app.Use(func(c *fiber.Ctx) error {
 		c.Locals("userId", testUserId)
@@ -39,7 +39,7 @@ func TestMain(m *testing.M) {
 		return c.Next()
 	})
 
-	routes.SetupRoutes(app, db)
+	SetupRoutes(app, db)
 
 	m.Run()
 }
@@ -71,7 +71,7 @@ func TestSignUp(t *testing.T) {
 			return true
 		})).Return(true, nil).Once()
 
-		req := httptest.NewRequest("POST", "/auth/sign-up", bytes.NewReader([]byte(`{"username":"`+testUsername+`","password":"`+testPassword+`"}`)))
+		req := httptest.NewRequest("POST", "/auth/sign-up", bytes.NewReader([]byte(`{"username":"`+ testUsername +`","password":"`+ testPassword +`"}`)))
 		req.Header.Set("Content-Type", "application/json")
 
 		resp, err := app.Test(req)
@@ -97,7 +97,7 @@ func TestSignUp(t *testing.T) {
 		})).Return(false, nil).Once()
 		db.On("SignUp", mock.AnythingOfType("database.Auth")).Return(nil).Once()
 
-		req := httptest.NewRequest("POST", "/auth/sign-up", bytes.NewReader([]byte(`{"username":"`+testUsername+`","password":"`+testPassword+`"}`)))
+		req := httptest.NewRequest("POST", "/auth/sign-up", bytes.NewReader([]byte(`{"username":"`+ testUsername +`","password":"`+ testPassword +`"}`)))
 		req.Header.Set("Content-Type", "application/json")
 
 		resp, err := app.Test(req)
@@ -138,7 +138,7 @@ func TestSignIn(t *testing.T) {
 			return true
 		})).Return(false, nil).Once()
 
-		req := httptest.NewRequest("POST", "/auth/sign-in", bytes.NewReader([]byte(`{"username":"`+testUsername+`","password":"`+testPassword+`"}`)))
+		req := httptest.NewRequest("POST", "/auth/sign-in", bytes.NewReader([]byte(`{"username":"`+ testUsername +`","password":"`+ testPassword +`"}`)))
 		req.Header.Set("Content-Type", "application/json")
 
 		resp, err := app.Test(req)
@@ -164,7 +164,7 @@ func TestSignIn(t *testing.T) {
 		})).Return(true, nil).Once()
 		db.On("SignIn", mock.AnythingOfType("database.Auth")).Return(testUserId, database.ErrInvalidCredentials).Once()
 
-		req := httptest.NewRequest("POST", "/auth/sign-in", bytes.NewReader([]byte(`{"username":"`+testUsername+`","password":"`+testPassword+`"}`)))
+		req := httptest.NewRequest("POST", "/auth/sign-in", bytes.NewReader([]byte(`{"username":"`+ testUsername +`","password":"`+ testPassword +`"}`)))
 		req.Header.Set("Content-Type", "application/json")
 
 		resp, err := app.Test(req)
@@ -190,7 +190,7 @@ func TestSignIn(t *testing.T) {
 		})).Return(true, nil).Once()
 		db.On("SignIn", mock.AnythingOfType("database.Auth")).Return(testUserId, nil).Once()
 
-		req := httptest.NewRequest("POST", "/auth/sign-in", bytes.NewReader([]byte(`{"username":"`+testUsername+`","password":"`+testPassword+`"}`)))
+		req := httptest.NewRequest("POST", "/auth/sign-in", bytes.NewReader([]byte(`{"username":"`+ testUsername +`","password":"`+ testPassword +`"}`)))
 		req.Header.Set("Content-Type", "application/json")
 
 		resp, err := app.Test(req)
@@ -211,7 +211,7 @@ func TestSignIn(t *testing.T) {
 	})
 }
 
-func TestGetUserProfile(t * testing.T) {
+func TestGetUserProfile(t *testing.T) {
 	t.Run("User not found", func(t *testing.T) {
 		user := database.User{}
 
