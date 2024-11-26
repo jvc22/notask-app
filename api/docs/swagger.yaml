@@ -1,0 +1,180 @@
+basePath: /
+definitions:
+  database.Auth:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  database.Task:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+  routes.ResponseErrorMessage:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: To-do app API to manage tasks
+  title: notask.app API
+  version: 1.0.0
+paths:
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user based on credentials
+      parameters:
+      - description: Auth object
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/database.Auth'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Accessed
+        "400":
+          description: Username and password are required
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+        "404":
+          description: Username not found or invalid password
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+        "500":
+          description: Error parsing body, searching user, or generating token
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+      summary: Sign in user
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Create new user account on database
+      parameters:
+      - description: Auth object
+        in: body
+        name: auth
+        required: true
+        schema:
+          $ref: '#/definitions/database.Auth'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Username and password are required
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+        "409":
+          description: Username already in use
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+        "500":
+          description: Error parsing body or registering new account
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+      summary: Sign up user
+      tags:
+      - auth
+  /tasks:
+    delete:
+      description: Remove task from database using id
+      parameters:
+      - description: Task Id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deleted
+        "400":
+          description: Task Id should be a valid number | Task not found
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+        "500":
+          description: Error checking or deleting task
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+      summary: Delete task
+      tags:
+      - tasks
+    get:
+      description: Get all tasks created specifically by the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Fetched
+          schema:
+            items:
+              $ref: '#/definitions/database.Task'
+            type: array
+        "500":
+          description: Error parsing body or fetching tasks
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+      summary: Fetch and return tasks
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      description: Insert new user task into database
+      parameters:
+      - description: Task object
+        in: body
+        name: task
+        required: true
+        schema:
+          $ref: '#/definitions/database.Task'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Title is required
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+        "500":
+          description: Error parsing body or creating task
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+      summary: Create new task
+      tags:
+      - tasks
+  /user:
+    get:
+      description: Get all profile user information registered on the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Fetched
+        "500":
+          description: Error fetching user profile
+          schema:
+            $ref: '#/definitions/routes.ResponseErrorMessage'
+      summary: Fetch and return user info
+      tags:
+      - user
+swagger: "2.0"
