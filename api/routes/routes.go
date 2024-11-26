@@ -8,8 +8,8 @@ import (
 )
 
 func SetupRoutes(app *fiber.App, db database.Database) {
-	app.Get("/swagger/*", swagger.HandlerDefault)
-	app.Get("/swagger/*", swagger.New(swagger.Config{
+	app.Get("/docs/*", swagger.HandlerDefault)
+	app.Get("/docs/*", swagger.New(swagger.Config{
 		DeepLinking:  false,
 		DocExpansion: "list",
 	}))
