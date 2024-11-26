@@ -12,7 +12,7 @@ func AuthMiddleware(app *fiber.App, db *sql.DB) {
 	app.Use("/", func(c *fiber.Ctx) error {
 		if strings.HasPrefix(c.Path(), "/auth") {
 			return c.Next()
-		} else if strings.HasPrefix(c.Path(), "/swagger") {
+		} else if strings.HasPrefix(c.Path(), "/docs") {
 			return c.Next()
 		}
 
