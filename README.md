@@ -36,3 +36,5 @@
 3. **Access the application**:
     - Open your web browser and navigate to `http://localhost:3000`.
     - The application should now be up and running.
+
+For the API documentation, navigate to `http://localhost:8080/swagger
