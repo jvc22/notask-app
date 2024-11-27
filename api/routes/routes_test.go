@@ -228,7 +228,7 @@ func TestGetUserProfile(t *testing.T) {
 			t.Fatal("Error sending request:", err)
 		}
 
-		assert.Equal(t, fiber.StatusUnauthorized, resp.StatusCode)
+		assert.Equal(t, fiber.StatusNotFound, resp.StatusCode)
 
 		expectedResponse := `{"message":"User not found."}`
 		bodyBytes, _ := io.ReadAll(resp.Body)
