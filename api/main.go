@@ -4,12 +4,11 @@ import (
 	"notask-app/auth"
 	"notask-app/database"
 	"notask-app/routes"
+	"os"
 
 	_ "notask-app/docs"
 
 	"github.com/gofiber/fiber/v2"
-
-	"github.com/joho/godotenv"
 )
 
 // @title notask.app API
@@ -18,10 +17,9 @@ import (
 // @host localhost:8080
 // @BasePath /
 func main() {
-	if err := godotenv.Load("/app/.env"); err != nil {
-		if err := godotenv.Load("../.env"); err != nil {
-			panic(err)
-		}
+	secret := os.Getenv("JWT_SECRET_KEY")
+	if secret == "" {
+		panic("JWT_SECRET_KEY is not set")
 	}
 
 	connection, err := database.StartDatabase("./database/volume/database.db")

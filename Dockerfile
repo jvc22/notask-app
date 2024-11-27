@@ -57,7 +57,7 @@ RUN mkdir -p /app/api
 
 COPY --from=compiler /app/api ./api/api
 
-COPY .env .
+ENV JWT_SECRET_KEY="$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'));")"
 
 RUN mkdir -p /app/database/volume && \
     chmod 777 /app/database/volume && \
