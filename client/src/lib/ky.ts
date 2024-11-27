@@ -3,6 +3,8 @@ import ky from 'ky'
 import { redirect } from 'next/navigation'
 import { toast } from 'sonner'
 
+let hasShownSessionToast = false
+
 export const api = ky.create({
   prefixUrl: 'http://localhost:8080',
   retry: {
@@ -36,12 +38,17 @@ export const api = ky.create({
           cookieStore = serverCookies
         }
 
-        if (response.status === 401) {
+        if (response.status === 401 && !hasShownSessionToast) {
+          hasShownSessionToast = true
+
           deleteCookie('notask-token', { cookies: cookieStore })
 
-          toast.warning('Your session expired.')
-
-          redirect('/auth/sign-in')
+          toast.warning('Your session expired.', {
+            action: {
+              label: 'Sign in',
+              onClick: () => redirect('/auth/sign-in'),
+            },
+          })
         }
       },
     ],
