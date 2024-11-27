@@ -9,6 +9,7 @@ import (
 	_ "notask-app/docs"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 // @title notask.app API
@@ -19,7 +20,9 @@ import (
 func main() {
 	secret := os.Getenv("JWT_SECRET_KEY")
 	if secret == "" {
-		panic("JWT_SECRET_KEY is not set")
+		if err := godotenv.Load("../.env"); err != nil {
+			panic(err)
+		}
 	}
 
 	connection, err := database.StartDatabase("./database/volume/database.db")
